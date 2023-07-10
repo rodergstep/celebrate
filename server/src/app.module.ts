@@ -6,6 +6,7 @@ import { CategoryModule } from './category/category.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -14,7 +15,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
-      name: 'globalConnection',
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
@@ -28,6 +28,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
       inject: [ConfigService],
     }),
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

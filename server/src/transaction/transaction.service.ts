@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Repository } from 'typeorm';
@@ -17,6 +21,7 @@ export class TransactionService {
       amount: createTransactionDto.amount,
       user: { id },
     };
+    if (!newTransaction) throw new BadRequestException('Smth went wrong');
     return await this.transactionRepository.save(newTransaction);
   }
 
@@ -27,6 +32,27 @@ export class TransactionService {
           id,
         },
       },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+  }
+
+  async findAllWithPagination(id: number, page: number, limit: number) {
+    return await this.transactionRepository.find({
+      where: {
+        user: {
+          id,
+        },
+      },
+      relations: {
+        user: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      take: limit,
+      skip: (page - 1) * limit,
     });
   }
 

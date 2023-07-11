@@ -10,6 +10,7 @@ import {
   Req,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -25,6 +26,20 @@ export class TransactionController {
   @UsePipes(new ValidationPipe())
   create(@Body() createTransactionDto: CreateTransactionDto, @Req() req) {
     return this.transactionService.create(createTransactionDto, +req.user.id);
+  }
+
+  @Get('pagination')
+  @UseGuards(JwtAuthGuard)
+  findAllWithPagination(
+    @Req() req,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.transactionService.findAllWithPagination(
+      +req.user.id,
+      +page,
+      +limit,
+    );
   }
 
   @Get()

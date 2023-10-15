@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/types/types';
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +13,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const user = await this.userService.findOne(email);
-    const isPassMatch = await bcrypt.compare(password, user.password);
+    const isPassMatch = await compare(password, user.password);
     console.log(isPassMatch, password, user.password, user);
     if (user && isPassMatch) {
       return user;

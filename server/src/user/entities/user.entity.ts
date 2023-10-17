@@ -1,3 +1,4 @@
+import { Category } from 'src/category/entities/category.entity';
 import { Transaction } from 'src/transaction/entities/transaction.entity';
 import {
   Column,
@@ -23,6 +24,11 @@ export class User {
     onDelete: 'CASCADE',
   })
   transactions: Transaction[];
+
+  @OneToMany(() => Category, (category) => category.user, {
+    onDelete: 'CASCADE',
+  })
+  categories: Category[];
 
   @CreateDateColumn()
   createdAt: Date;

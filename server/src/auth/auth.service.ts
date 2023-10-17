@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { IUser } from 'src/types/types';
-import { compare } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -11,17 +12,36 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string) {
-    const user = await this.userService.findOne(email);
-    const isPassMatch = await compare(password, user.password);
-    console.log(isPassMatch, password, user.password, user);
+  async login(loginAuthDto: LoginAuthDto) {
+    const user = await this.validateUser(loginAuthDto);
+    return this.generateToken(user);
+  }
+
+  // async registration(userDto: CreateUserDto) {
+  //     const candidate = await this.userService.getUserByEmail(userDto.email);
+  //     if (candidate) {
+  //         throw new HttpException('Пользователь с таким email существует', HttpStatus.BAD_REQUEST);
+  //     }
+  //     const hashPassword = await bcrypt.hash(userDto.password, 5);
+  //     const user = await this.userService.createUser({...userDto, password: hashPassword})
+  //     return this.generateToken(user)
+  // }
+
+  async validateUser(loginAuthDto: LoginAuthDto) {
+    const user = await this.userService.findOne(loginAuthDto.email);
+    const isPassMatch = await bcrypt.compare(
+      loginAuthDto.password,
+      user.password,
+    );
     if (user && isPassMatch) {
       return user;
     }
-    throw new BadRequestException('User or password are incorrect');
+    throw new BadRequestException({
+      message: 'User or password are incorrect',
+    });
   }
 
-  async login(user: IUser) {
+  private async generateToken(user: User) {
     const { id, email } = user;
     return {
       id,

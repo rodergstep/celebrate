@@ -6,42 +6,58 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-@Controller('category')
-@ApiTags('category')
+@Controller('categories')
+@ApiTags('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe())
+  @ApiBearerAuth('JWT-auth')
+  create(@Body() createCategoryDto: CreateCategoryDto, @Req() req) {
+    return this.categoryService.create(createCategoryDto, +req.user.id);
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  findAll(@Req() req) {
+    return this.categoryService.findAll(+req.user.id);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  findOne(@Param('id') id: number) {
     return this.categoryService.findOne(+id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  remove(@Param('id') id: number) {
     return this.categoryService.remove(+id);
   }
 }

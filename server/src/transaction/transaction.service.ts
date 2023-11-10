@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Repository } from 'typeorm';
 import { Transaction } from './entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +14,7 @@ export class TransactionService {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
   ) {}
+
   async create(createTransactionDto: CreateTransactionDto, id: number) {
     const newTransaction = {
       title: createTransactionDto.title,
@@ -67,16 +67,6 @@ export class TransactionService {
     });
     if (!transaction) throw new NotFoundException('Transaction not found');
     return transaction;
-  }
-
-  async update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    const transaction = await this.transactionRepository.findOne({
-      where: {
-        id,
-      },
-    });
-    if (!transaction) throw new NotFoundException('Transaction not found');
-    return await this.transactionRepository.update(id, updateTransactionDto);
   }
 
   async remove(id: number) {

@@ -48,6 +48,9 @@ export class CategoryService {
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     const category = await this.categoryRepository.findOne({
       where: { id },
+      relations: {
+        user: true,
+      },
     });
     if (!category) return new NotFoundException('Category not found');
     return await this.categoryRepository.update(id, updateCategoryDto);
@@ -56,6 +59,9 @@ export class CategoryService {
   async remove(id: number) {
     const category = await this.categoryRepository.findOne({
       where: { id },
+      relations: {
+        user: true,
+      },
     });
     if (!category) return new NotFoundException('Category not found');
     return await this.categoryRepository.delete(id);

@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
@@ -14,9 +13,8 @@ import {
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @Controller('transaction')
 @ApiTags('transanction')
@@ -25,6 +23,7 @@ export class TransactionController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
   @UsePipes(new ValidationPipe())
   create(@Body() createTransactionDto: CreateTransactionDto, @Req() req) {
     return this.transactionService.create(createTransactionDto, +req.user.id);
@@ -32,6 +31,17 @@ export class TransactionController {
 
   @Get('pagination')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiQuery({
+    name: 'page',
+    required: true,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: true,
+    type: Number,
+  })
   findAllWithPagination(
     @Req() req,
     @Query('page') page = 1,
@@ -46,27 +56,23 @@ export class TransactionController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
   findAll(@Req() req) {
     return this.transactionService.findAll(+req.user.id);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
+  @ApiBearerAuth('JWT-auth')
+  findOne(@Param('id') id: number) {
     return this.transactionService.findOne(+id);
   }
 
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  update(
-    @Param('id') id: string,
-    @Body() updateTransactionDto: UpdateTransactionDto,
-  ) {
-    return this.transactionService.update(+id, updateTransactionDto);
-  }
-
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @UsePipes(new ValidationPipe())
+  remove(@Param('id') id: number) {
     return this.transactionService.remove(+id);
   }
 }

@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransactionModule } from './transaction/transaction.module';
+import AdminjsModule from './adminjs/adminjs.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { TransactionModule } from './transaction/transaction.module';
       inject: [ConfigService],
     }),
     TransactionModule,
+    AdminjsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

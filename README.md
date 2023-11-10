@@ -1,7 +1,9 @@
-# celebrate
+# Celebrate
 
-Fullstack app react next.js + nest.js + postgres
+Fullstack app Next.js + Nest.js + Postgres + AdmminJs + Swagger
 
-Development enviroment
+Development enviroment:
+Frontend endpoint: http://localhost:3000/
 Backend endpoint: http://localhost:3001/api/
 Swagger documentation : http://localhost:3001/swagger#/
+Admin panel : http://localhost:3001/admin/

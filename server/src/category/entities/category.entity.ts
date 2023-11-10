@@ -1,5 +1,6 @@
 import { User } from 'src/user/entities/user.entity';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -10,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Category {
+export class Category extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
